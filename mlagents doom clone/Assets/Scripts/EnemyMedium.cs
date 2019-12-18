@@ -1,4 +1,4 @@
-using UnityEngine;
+using System.Collections;
 
 public class EnemyMedium : Enemy
 {
@@ -6,5 +6,11 @@ public class EnemyMedium : Enemy
     {
         base.DoStartStuff();
         health = 50;
+    }
+    public override IEnumerator Die()
+    {
+        ScoreKeeper.UpdateScore(100);
+        StartCoroutine(base.Die());
+        yield return null;
     }
 }

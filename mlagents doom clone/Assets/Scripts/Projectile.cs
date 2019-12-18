@@ -6,6 +6,8 @@ public abstract class Projectile : MonoBehaviour
 {
     public int damage;
     public GameObject trailPrefab;
+    public enum Owner { Enemy, Player };
+    public Owner owner;
 
     public void Start()
     {
@@ -14,9 +16,19 @@ public abstract class Projectile : MonoBehaviour
 
     public virtual void OnCollisionEnter(Collision c)
     {
-        if (c.gameObject.CompareTag("doomenemy"))
+        if (owner == Projectile.Owner.Player)
         {
-            c.gameObject.GetComponent<Enemy>().GotHit(damage);
+            if (c.gameObject.CompareTag("doomenemy"))
+            {
+                c.gameObject.GetComponent<Enemy>().GotHit(damage);
+            }
+        }
+        else
+        {
+            if (c.gameObject.CompareTag("doomguy"))
+            {
+                c.gameObject.GetComponent<DoomAgent>().GotHit(damage);
+            }
         }
 
         StopAllCoroutines();

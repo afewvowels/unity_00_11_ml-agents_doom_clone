@@ -7,6 +7,7 @@ public class DoomAgent : Agent
 {
     public DoomAcademy academy;
     public MazeGenerator mazeGenerator;
+    public GameObject instantiatedContainer;
     public Rigidbody agentRB;
     public int actions;
     public int goals;
@@ -253,7 +254,6 @@ public class DoomAgent : Agent
         mazeGenerator.DestroyMaze();
         actions = 0;
         MakeMaze();
-        mazeGenerator.PlaceDoomAgent();
     }
     public void UpdateRewardsText()
     {
@@ -283,14 +283,15 @@ public class DoomAgent : Agent
             makeInterior = true;
         }
 
-        int width = Random.Range((int)academy.resetParameters["min_width"], (int)academy.resetParameters["max_width"]);
+        int width = Random.Range((int)academy.resetParameters["min_width"], (int)academy.resetParameters["max_width"] + 1);
+        int enemyCount = Random.Range((int)academy.resetParameters["enemy_min"], (int)academy.resetParameters["enemy_max"] + 1);
 
         if (width % 2 == 0)
         {
             width++;
         }
         currentMazeWidth = width;
-        mazeGenerator.CreateMaze(width, width, makeInterior, obstacles);
+        mazeGenerator.CreateMaze(width, width, enemyCount, makeInterior, obstacles);
     }
 
     public void DoWeaponPickup(PickupWeapon.PickupType weaponType)
@@ -314,6 +315,8 @@ public class DoomAgent : Agent
                 break;
         }
 
+        ScoreKeeper.UpdateScore(50);
+
         StartCoroutine(SwitchWeapon(weaponType));
     }
 
@@ -331,6 +334,8 @@ public class DoomAgent : Agent
                 ammoArray[3] += amount;
                 break;
         }
+
+        ScoreKeeper.UpdateScore(10);
 
         UpdateDisplayedAmmo();
     }
@@ -362,6 +367,8 @@ public class DoomAgent : Agent
                 }
                 break;
         }
+
+        ScoreKeeper.UpdateScore(10);
     }
 
     // This may be the ugliest code I've ever written.
@@ -513,7 +520,7 @@ public class DoomAgent : Agent
         activeWeaponWeapon = activeWeaponGO.GetComponent<Weapon>();
 
         activeWeaponArr[(int)weapon] = 1;
-
+        
         UpdateDisplayedAmmo();
 
         switchingWeapons = false;
@@ -521,8 +528,25 @@ public class DoomAgent : Agent
 
     public void GotHit(int value)
     {
-        health -= value;
+        if (armor >= value)
+        {
+            armor -= value;
+            UpdateArmor();
+        }
+        else if (armor - value < 0)
+        {
+            int remainder = Mathf.Abs(armor - value);
+            armor = 0;
+            health -= remainder;
+            UpdateArmor();
+        }
+        else
+        {
+            health -= value;
+        }
+
         UpdateHealth();
+
         if (health <= 0)
         {
             Done();

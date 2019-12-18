@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2355045503645694804}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.704, z: 0.637}
+  m_LocalPosition: {x: 0, y: 0.704, z: 0.846}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2521558521690684115}
@@ -40,7 +40,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2521558521690684115}
   - component: {fileID: 6225373581786356569}
-  - component: {fileID: 8283734386751296559}
+  - component: {fileID: 2125215790136703433}
   m_Layer: 0
   m_Name: enemyroot
   m_TagString: doomenemy
@@ -75,10 +75,10 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 8
+  m_Radius: 10
   m_Center: {x: 0, y: 0.75, z: 0}
---- !u!135 &8283734386751296559
-SphereCollider:
+--- !u!136 &2125215790136703433
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -87,9 +87,10 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.65
-  m_Center: {x: 0, y: 0.75, z: 0}
+  m_Radius: 0.5
+  m_Height: 1.5
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!1001 &8462009020442303717
 PrefabInstance:
   m_ObjectHideFlags: 0

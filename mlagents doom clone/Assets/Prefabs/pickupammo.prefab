@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 720523db0ebb441b99e06cfbb1f32c7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isArmor: 0
 --- !u!1 &6264220742507722980
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,7 +137,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.75
+  m_Radius: 1
   m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &6376798779667750245
 MonoBehaviour:

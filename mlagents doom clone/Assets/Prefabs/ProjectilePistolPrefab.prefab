@@ -110,6 +110,7 @@ MonoBehaviour:
   damage: 5
   trailPrefab: {fileID: 7183091486543877465, guid: 7a78777881d7f42d4ab9c9ddfcc6a7e3,
     type: 3}
+  owner: 1
 --- !u!54 &7493444731700232102
 Rigidbody:
   m_ObjectHideFlags: 0

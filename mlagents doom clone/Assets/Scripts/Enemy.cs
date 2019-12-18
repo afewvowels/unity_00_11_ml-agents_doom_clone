@@ -7,6 +7,7 @@ public abstract class Enemy : MonoBehaviour
     public bool isAttacking;
     public GameObject enemyProjectile;
     public GameObject instantiationPoint;
+    public MazeGenerator mazeGenerator;
 
     private void Start()
     {
@@ -79,8 +80,8 @@ public abstract class Enemy : MonoBehaviour
 
         // int layerMask = 1 << 8;
         // layerMask = ~layerMask;
-        Debug.DrawRay((transform.position + transform.up), transform.forward * 5.0f, Color.red, 0.1f);
-        if (!Physics.Raycast((transform.position + transform.up), transform.forward, 3.0f))
+        // Debug.DrawRay((transform.position + transform.up), transform.forward * 5.0f, Color.red, 0.1f);
+        if (!Physics.Raycast((transform.position + transform.up), transform.forward, 3.0f, LayerMask.GetMask("Default")))
         {
             Vector3 fromPosition = transform.position;
             Vector3 toPosition = transform.position + (transform.forward * 2.0f);
@@ -97,37 +98,41 @@ public abstract class Enemy : MonoBehaviour
 
     public bool IsAgentVisible(Transform agentPosition)
     {
-        Debug.DrawRay((transform.position + transform.up), (agentPosition.position + agentPosition.up), Color.red, 0.1f);
-        float distanceMag = (transform.position - agentPosition.position).magnitude;
-        return Physics.Raycast((transform.position + transform.up), (agentPosition.position + agentPosition.up), distanceMag, 8);
+        // Debug.DrawRay(transform.position, (agentPosition.position - transform.position), Color.red, 0.1f);
+        float distanceMag = (transform.position - agentPosition.position).magnitude + 5.0f;
+        return Physics.Raycast(transform.position, (agentPosition.position - transform.position), distanceMag, LayerMask.GetMask("doomagent"));
     }
 
     public void Attack(DoomAgent agent)
     {
         StopAllCoroutines();
         StartCoroutine(LookAtAgent(agent));
-        StartCoroutine(AttackAgent(agent));
     }
 
     public IEnumerator AttackAgent(DoomAgent agent)
     {
         isAttacking = true;
-        GameObject bullet = (GameObject)Instantiate(enemyProjectile);
-        bullet.transform.position = instantiationPoint.transform.position;
-        bullet.transform.rotation = transform.rotation;
-        bullet.GetComponent<Rigidbody>().AddForce(transform.forward * 10.0f, ForceMode.Impulse);
+        GameObject bullet = (GameObject)Instantiate(enemyProjectile, instantiationPoint.transform.position + transform.forward, transform.rotation);
+        bullet.GetComponent<Rigidbody>().AddForce(transform.forward * 0.1f, ForceMode.Impulse);
         yield return new WaitForSeconds(1.0f);
-        StartCoroutine(AttackAgent(agent));
+        StartCoroutine(LookAtAgent(agent));
     }
 
     public IEnumerator LookAtAgent(DoomAgent agent)
     {
-        transform.LookAt(agent.transform);
-        yield return null;
-        StartCoroutine(LookAtAgent(agent));
+        Quaternion fromRotation = transform.rotation;
+        Quaternion toRotation = Quaternion.LookRotation(agent.transform.position - transform.position, transform.up);
+
+        for (float t = 0.0f; t < 1.0f; t += Time.fixedDeltaTime * 10.0f)
+        {
+            transform.rotation = Quaternion.Lerp(fromRotation, toRotation, t);
+            yield return null;
+        }
+
+        StartCoroutine(AttackAgent(agent));
     }
 
-    public IEnumerator Die()
+    public virtual IEnumerator Die()
     {
         Destroy(GetComponent<SphereCollider>());
 
@@ -139,6 +144,8 @@ public abstract class Enemy : MonoBehaviour
             transform.Rotate(new Vector3(0.0f, 5.0f, 0.0f));
             yield return null;
         }
+
+        mazeGenerator.EnemyDied();
 
         Destroy(gameObject);
     }
